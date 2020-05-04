@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EZCameraShake;
 
 public class Kick : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class Kick : MonoBehaviour
     public AudioSource kickSoundHeavy;
     private GameObject kickBox;
     private GameObject player;
+    public GameObject bloodParticle;
+    public GameObject blood;
     [HideInInspector]
     public float keyHoldTime;
     [Range(0.5f, 5.0f)]
@@ -60,11 +63,18 @@ public class Kick : MonoBehaviour
             {
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(kickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundLight.Play();
+                Instantiate(bloodParticle, other.transform);
+                Instantiate(blood, other.transform);
+                CameraShaker.Instance.ShakeOnce(5f,1f,0.1f,0.1f);
             }
             else if (kickState == KickType.chargeKick && Input.GetMouseButtonUp(0))
             {
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(kickForce * keyHoldTime, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundHeavy.Play();
+                Instantiate(bloodParticle, other.transform);
+                Instantiate(blood, other.transform);
+                CameraShaker.Instance.ShakeOnce(10f, 5f, 0.3f, 0.3f);
+                StartCoroutine(SlowTime());
             }
             //enemy.AddExplosionForce((player.GetComponent<Rigidbody>().velocity.magnitude <= 0.1f ? kickForce : (kickForce * player.GetComponent<Rigidbody>().velocity.magnitude)), 
             //    kickBox.transform.position + -player.transform.forward, 5.0f);
@@ -99,5 +109,12 @@ public class Kick : MonoBehaviour
             keyHoldTime = 0;
             kickState = KickType.none;
         }
+    }
+
+    private IEnumerator SlowTime()
+    {
+        Time.timeScale = 0.4f;
+        yield return new WaitForSeconds(0.1f);
+        Time.timeScale = 1;        
     }
 }

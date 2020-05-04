@@ -5,18 +5,12 @@ using UnityEngine.SceneManagement;
 
 public class TitleScreen : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
-        
+        Time.timeScale = 1;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+    public GameObject pauseMenu;
     public void PlayGame()
     {
         SceneManager.LoadScene(1);
@@ -25,5 +19,16 @@ public class TitleScreen : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void Continue()
+    {
+        pauseMenu.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void QuitToTitle()
+    {
+        SceneManager.LoadScene(0);
     }
 }

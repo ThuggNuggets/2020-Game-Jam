@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class ChargeBar : MonoBehaviour
 {
+    public GameObject player;
     public RawImage chargeBlock;
     public float maxScale = 2.714f; // Max scale of the box inside the bar
 
@@ -40,5 +41,8 @@ public class ChargeBar : MonoBehaviour
         temp.y = maxScale - temp.y;
 
         chargeBlock.rectTransform.localScale = temp;
+
+        transform.position = Camera.main.WorldToScreenPoint(player.transform.position);
+        
     }
 }
