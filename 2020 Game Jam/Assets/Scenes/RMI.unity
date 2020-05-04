@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_UseShadowmask: 0
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -3781,41 +3781,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: pauseMenu
-      value: 
-      objectReference: {fileID: 55406998}
-    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: deathMenu
-      value: 
-      objectReference: {fileID: 204424377}
-    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: chargeBar
-      value: 
-      objectReference: {fileID: 522369386}
-    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: keyHoldMaxTime
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4447256336553194456, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.27
-      objectReference: {fileID: 0}
-    - target: {fileID: 5074630188421154987, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -25.63
-      objectReference: {fileID: 0}
-    - target: {fileID: 5074630188421154987, guid: 6a83ebeba5495764eb2851273dee7843,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.56
       objectReference: {fileID: 0}
     - target: {fileID: 5820724284862113517, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
