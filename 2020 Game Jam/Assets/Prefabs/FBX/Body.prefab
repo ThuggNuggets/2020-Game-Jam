@@ -1,5 +1,35 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &895541848
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 895541849}
+  m_Layer: 0
+  m_Name: KickCharge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &895541849
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 895541848}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.01, y: 0, z: -0.61}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8924834110496201002}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3679208046109970942
 GameObject:
   m_ObjectHideFlags: 0
@@ -30,8 +60,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3679208046109970942}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.009, y: -0.127, z: 1.08}
-  m_LocalScale: {x: 0.64828557, y: 0.6926856, z: 1}
+  m_LocalPosition: {x: -0.006, y: -0.127, z: 0.766}
+  m_LocalScale: {x: 1.2493795, y: 1.161426, z: 2.4529178}
   m_Children: []
   m_Father: {fileID: 8924834110496201002}
   m_RootOrder: 1
@@ -51,7 +81,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3679208046109970942}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -62,7 +92,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 86e7251f23eee534c8ab3d6c27997f7d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -106,9 +136,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: f5aafcb950e2166499abb208196c3a39, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 8c6e36872c3498a4f9690e471e79ab61, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -202,9 +232,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 8c6e36872c3498a4f9690e471e79ab61, type: 3}
+  m_audioClip: {fileID: 8300000, guid: f5aafcb950e2166499abb208196c3a39, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.2
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -304,6 +334,9 @@ MonoBehaviour:
   upwardsForce: 0
   kickSoundLight: {fileID: 1348856127}
   kickSoundHeavy: {fileID: 1348856126}
+  bloodParticle: {fileID: 984246003993383242, guid: 62b5d453960b8e844a7424b3e669de57,
+    type: 3}
+  blood: {fileID: 3926655513642916136, guid: 721f51eaa7521744f944809556698d4f, type: 3}
   keyHoldTime: 0
   keyHoldMaxTime: 2
 --- !u!1 &4277741360118709469
@@ -322,7 +355,7 @@ GameObject:
   - component: {fileID: 2058883765}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -340,6 +373,7 @@ Transform:
   m_Children:
   - {fileID: 3217201984323526230}
   - {fileID: 5291552996709489283}
+  - {fileID: 895541849}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -397,7 +431,7 @@ CapsuleCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4277741360118709469}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: c2c5b73527b9e754292e92cc642953fe, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5
@@ -412,8 +446,8 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4277741360118709469}
   serializedVersion: 2
-  m_Mass: 5
-  m_Drag: 0
+  m_Mass: 1
+  m_Drag: 1
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
@@ -437,13 +471,16 @@ MonoBehaviour:
   walkSpeed: 20
   turnSmoothTime: 0.05
   speedSmoothTime: 0.3
-  gravityModifier: 10
+  gravityModifier: 0
   invulnerabilityTime: 0.5
   knockBackForce: 150
   knockBackTime: 0.45
   slowDownAmount: 0.2
   disableMove: 0
   kickBox: {fileID: 3679208046109970942}
+  pauseMenu: {fileID: 0}
+  deathMenu: {fileID: 0}
+  chargeBar: {fileID: 0}
   buttonPressed: 0
   gamePaused: 0
   startingHeight: 0
@@ -539,7 +576,7 @@ BoxCollider:
   m_GameObject: {fileID: 6158923355275879574}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}

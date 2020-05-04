@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using TMPro;
-
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -43,7 +43,9 @@ public class PlayerController : MonoBehaviour
     float speedSmoothVelocity;
     float currentSpeed;
     public GameObject kickBox;
-
+    public GameObject pauseMenu;
+    public GameObject deathMenu;
+    public GameObject chargeBar;
     #region Private Variables
     //private CharacterController controller;
     private Rigidbody charRigidbody;
@@ -83,10 +85,11 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if(pauseMenu.activeSelf == false)
         #region Movement Update
         // Get the direction of input from the user
-        input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
+        input = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
+        
         // Normalize the input
         Vector2 inputDir = input.normalized;
 
@@ -162,9 +165,18 @@ public class PlayerController : MonoBehaviour
             currentHealth = 0;
         #endregion
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && deathMenu.activeSelf == false)
         {
-            Application.Quit();
+            pauseMenu.SetActive(true);
+            Time.timeScale = 0;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("DPlane"))
+        {
+            StartCoroutine(Death());
         }
     }
 
@@ -241,4 +253,19 @@ public class PlayerController : MonoBehaviour
     //    velocity += playerMoveDirection;
     //}
     #endregion
+
+    private IEnumerator Death()
+    {
+        //Play Death Audio
+
+        //Turn off Player Charge Bar
+        chargeBar.SetActive(false);
+        
+        //stop spawning enemies
+        
+        yield return new WaitForSeconds(2);
+
+        //Turn Dead screen on
+        deathMenu.SetActive(true);
+    }
 }
