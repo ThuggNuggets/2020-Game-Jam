@@ -74,9 +74,11 @@ public class EnemyController : MonoBehaviour
         {
             _closestHole = GetClosestHoleToPlayer();
             _kickDirection = (_closestHole.position - playerTransform.position).normalized;
-            Vector3 seekPos = (playerTransform.position - (_kickDirection * 2.0f));
+            Vector3 playerGrounded = playerTransform.position;
+            playerGrounded.y = this.transform.position.y;
+            Vector3 seekPos = (playerGrounded - (_kickDirection * 2.0f));
 
-            transform.LookAt(playerTransform);
+            transform.LookAt(playerGrounded);
             _rigidbody.MovePosition(transform.position + GetDirection(seekPos) * movementSpeed * Time.fixedDeltaTime);
         }
         else
@@ -87,14 +89,20 @@ public class EnemyController : MonoBehaviour
 
     private void Attack()
     {
-        if (Vector3.Distance(playerTransform.position, transform.position) < attackDistance && !_justKicked)
+        if (Vector3.Distance(playerTransform.position, transform.position) < attackDistance)
         {
-            _playerRigidbody.AddForce(_kickDirection * kickForce, ForceMode.Impulse);
-            _justKicked = true;
+            if(!_justKicked)
+            {
+                _playerRigidbody.AddForce((_kickDirection + Vector3.up).normalized * kickForce, ForceMode.Impulse);
+                _justKicked = true;
+            }
         }
         else
         {
-            _currentState = AIState.Chase;
+            if (!_justKicked)
+            {
+                _currentState = AIState.Chase;
+            }
         }
 
         if (_justKicked)
@@ -141,8 +149,8 @@ public class EnemyController : MonoBehaviour
     public Transform GetClosestHoleToPlayer()
     {
         int index = 0;
-        float distance = 0f;
-        for(int i = 0; i < holes.Count; ++i)
+        float distance = Vector3.Distance(holes[0].position, playerTransform.position);
+        for (int i = 1; i < holes.Count; ++i)
         {
             float calDis = Vector3.Distance(holes[i].position, playerTransform.position);
             if(calDis < distance)
