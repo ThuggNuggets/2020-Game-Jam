@@ -185,11 +185,19 @@ public class PlayerController : MonoBehaviour
         //    currentHealth = 0;
         #endregion
 
-        if (Input.GetKeyDown(KeyCode.Escape) && deathMenu.activeSelf == false)
+        if (GetStartButtonPress() && deathMenu.activeSelf == false)
         {
             pauseMenu.SetActive(true);
             Time.timeScale = 0;
         }
+    }
+
+    private bool GetStartButtonPress()
+    {
+        if (xboxController == XboxController.First)
+            return XCI.GetButton(XboxButton.Start, XboxController.First);
+        else
+            return Input.GetKeyDown(KeyCode.Escape);
     }
 
     #region Player Damage
