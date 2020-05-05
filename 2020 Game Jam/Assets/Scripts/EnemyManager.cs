@@ -4,13 +4,16 @@ using UnityEngine;
 
 public class EnemyManager : MonoBehaviour
 {
-    [Header("Debug")]
-    public float timeBetweenEnemySpawns = 1.0f;
-
     [Header("References")]
     public Transform spawnPointParent;
     public Transform enemyParent;
     public GameObject enemyPrefab;
+
+    [Header("Spawning Properties")]
+    public float timeBetweenEnemySpawns = 5.0f;
+    public float numberOfEnemies = 1.0f;
+    public float addNumberOfEnemies = 0.2f;
+    public bool enemiesSpawned = false;
 
     [Header("Enemy Properties")]
     public List<Transform> obstacles = new List<Transform>();
@@ -21,7 +24,6 @@ public class EnemyManager : MonoBehaviour
     // Privates
     private SpawnPoint[] _spawnPoints;
     private float _enemySpawnTimer = 0.0f;
-    private float _timeBetweenTimer = 0.0f;
 
     /// <summary>
     /// Called on initialise
@@ -38,13 +40,32 @@ public class EnemyManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called every frame
+    /// </summary>
     private void Update()
     {
-        _timeBetweenTimer += Time.deltaTime;
-        if(_timeBetweenTimer > timeBetweenEnemySpawns)
+        _enemySpawnTimer -= Time.deltaTime;
+        if (_enemySpawnTimer <= 0.0f)
         {
-            SpawnEnemy(GetRandomSpawn());
-            _timeBetweenTimer = 0.0f;
+            enemiesSpawned = false;
+        }
+
+        if (!enemiesSpawned)
+        {
+            _enemySpawnTimer -= Time.deltaTime;
+            for (int i = 0; i < (int) numberOfEnemies; i++)
+            {
+                Transform rand = GetRandomSpawn();
+                if (rand != null)
+                    SpawnEnemy(rand);
+                else
+                    Debug.LogWarning("All spawn points occupied! Skipping enemy spawn.");
+            }
+
+            _enemySpawnTimer = timeBetweenEnemySpawns;
+            numberOfEnemies += addNumberOfEnemies;
+            enemiesSpawned = true;
         }
     }
 
@@ -56,9 +77,7 @@ public class EnemyManager : MonoBehaviour
         int rand = Random.Range(0, _spawnPoints.Length);
         if (!_spawnPoints[rand].Occupied)
             return _spawnPoints[rand].transform;
-        else
-            GetRandomSpawn();
-
+        
         return null;
     }
 

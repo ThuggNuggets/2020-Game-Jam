@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 using System;
 
@@ -38,6 +39,10 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     public bool disableMove = false;
+    public GameObject kickBox;
+    public GameObject pauseMenu;
+    public GameObject deathMenu;
+    public GameObject chargeBar;
 
     #region Private Variables
     private Rigidbody charRigidbody;
@@ -71,6 +76,9 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (disableMove)
+            return;
+
         #region Movement Update
         // Get the direction of input from the user
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
@@ -147,9 +155,10 @@ public class PlayerController : MonoBehaviour
         //    currentHealth = 0;
         #endregion
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && deathMenu.activeSelf == false)
         {
-            Application.Quit();
+            pauseMenu.SetActive(true);
+            Time.timeScale = 0;
         }
     }
 
@@ -226,4 +235,35 @@ public class PlayerController : MonoBehaviour
     //    velocity += playerMoveDirection;
     //}
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        {
+            charRigidbody.AddForce(Vector3.down * 10.0f, ForceMode.Impulse);
+            disableMove = true;
+            charRigidbody.velocity = Vector3.zero;
+        }
+
+        if (other.CompareTag("DPlane"))
+        {
+            StartCoroutine(Death());
+        }
+    }
+
+
+    private IEnumerator Death()
+    {
+        //Play Death Audio 
+
+        //Turn off Player Charge Bar 
+        chargeBar.SetActive(false);
+
+        //stop spawning enemies 
+
+        yield return new WaitForSeconds(2);
+
+        //Turn Dead screen on 
+        deathMenu.SetActive(true);
+    }
 }

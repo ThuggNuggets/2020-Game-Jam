@@ -47,7 +47,7 @@ public class Kick : MonoBehaviour
     private void Start()
     {
         kickBox = this.gameObject;
-        player = GameObject.Find("Player");
+        player = GameObject.Find("Body");
         tempKnockBackTimer = knockBackTimer;
     }
 
