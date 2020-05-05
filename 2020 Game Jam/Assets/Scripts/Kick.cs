@@ -55,6 +55,7 @@ public class Kick : MonoBehaviour
         player = GameObject.Find("Body");
         tempKnockBackTimer = knockBackTimer;
         leg = GameObject.Find("LegR").GetComponent<MeshRenderer>();
+        CameraShaker.Instance.ShakeOnce(7f, 6f, 0.5f, 0.5f);
     }
 
     private void Update()
