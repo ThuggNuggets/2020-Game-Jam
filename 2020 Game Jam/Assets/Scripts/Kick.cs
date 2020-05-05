@@ -82,7 +82,7 @@ public class Kick : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             // Check for Light Kick Collision
-            if (kickState == KickType.lightKick && Input.GetMouseButtonUp(0))
+            if (kickState == KickType.lightKick && Input.GetMouseButtonUp(0) || kickState == KickType.lightKick && GetInputButtonUp())
             {
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(lightKickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundLight.Play();
@@ -93,7 +93,7 @@ public class Kick : MonoBehaviour
                 CameraShaker.Instance.ShakeOnce(2f, 2f, 0.1f, 0.1f);
             }
             // Check for Heavy Kick Collision
-            else if (kickState == KickType.heavyKick && Input.GetMouseButtonUp(0))
+            else if (kickState == KickType.heavyKick && Input.GetMouseButtonUp(0) || kickState == KickType.heavyKick && GetInputButtonUp())
             {
                 // If keyHoldTime is less than 0.1 second (0.1x multiplier) then just use 0.1x min force, otherwise heavyKickForce * keyHoldTime
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(heavyKickForce * ((keyHoldTime < 0.1f) ? 0.1f : keyHoldTime), kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
@@ -276,7 +276,7 @@ public class Kick : MonoBehaviour
     }
     IEnumerator SlowTimeHeavy()
     {
-        Time.timeScale = 0.3f;
+        Time.timeScale = 0.4f;
         leg.enabled = true;
         yield return new WaitForSeconds(0.1f);
         leg.enabled = false;

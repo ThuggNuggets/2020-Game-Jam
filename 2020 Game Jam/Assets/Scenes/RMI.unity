@@ -9116,6 +9116,36 @@ PrefabInstance:
       propertyPath: scoreText
       value: 
       objectReference: {fileID: 1384427153}
+    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: turnSensitivity
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: xboxController
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: kickButton
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: mouseButton
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 706231273}
+    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: leg
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 5820724284862113517, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
       propertyPath: m_Name
