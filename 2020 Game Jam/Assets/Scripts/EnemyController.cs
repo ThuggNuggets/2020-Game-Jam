@@ -11,8 +11,11 @@ public class EnemyController : MonoBehaviour
     [Header("General Properties")]
     public float movementSpeed = 10.0f;
     public float attackDistance = 2.0f;
+
+    [Header("Kick Properties")]
     public float kickForce = 25.0f;
     public float kickCooldown = 1.0f;
+    public float timeBeforeKick = 1.0f;
 
     [Header("Avoid Properties")]
     public LayerMask obstacleLayer;
@@ -28,7 +31,9 @@ public class EnemyController : MonoBehaviour
     private Vector3 _kickDirection = Vector3.zero;
     private Transform _closestHole;
     private bool _justKicked = false;
+    private bool _canKick = false;
     private float _kickTimer = 0.0f;
+    private float _beforeKickTimer = 0.0f;
 
     public enum AIState
     {
@@ -46,6 +51,7 @@ public class EnemyController : MonoBehaviour
         _playerRigidbody = playerTransform.GetComponent<Rigidbody>();
         _currentState = AIState.Chase;
         _kickTimer = kickCooldown;
+        _beforeKickTimer = timeBeforeKick;
     }
 
     private void FixedUpdate()
@@ -74,11 +80,9 @@ public class EnemyController : MonoBehaviour
         {
             _closestHole = GetClosestHoleToPlayer();
             _kickDirection = (_closestHole.position - playerTransform.position).normalized;
-            Vector3 playerGrounded = playerTransform.position;
-            playerGrounded.y = this.transform.position.y;
-            Vector3 seekPos = (playerGrounded - (_kickDirection * 2.0f));
+            Vector3 seekPos = (playerTransform.position - (_kickDirection * 2.0f));
 
-            transform.LookAt(playerGrounded);
+            transform.LookAt(playerTransform);
             _rigidbody.MovePosition(transform.position + GetDirection(seekPos) * movementSpeed * Time.fixedDeltaTime);
         }
         else
@@ -91,10 +95,12 @@ public class EnemyController : MonoBehaviour
     {
         if (Vector3.Distance(playerTransform.position, transform.position) < attackDistance)
         {
-            if(!_justKicked)
+            _beforeKickTimer -= Time.deltaTime;
+            if (!_justKicked && _beforeKickTimer <= 0.0f)
             {
-                _playerRigidbody.AddForce((_kickDirection + Vector3.up).normalized * kickForce, ForceMode.Impulse);
+                _playerRigidbody.AddForce(_kickDirection * kickForce, ForceMode.Impulse);
                 _justKicked = true;
+                _beforeKickTimer = timeBeforeKick;
             }
         }
         else
@@ -102,6 +108,7 @@ public class EnemyController : MonoBehaviour
             if (!_justKicked)
             {
                 _currentState = AIState.Chase;
+                _beforeKickTimer = timeBeforeKick;
             }
         }
 
@@ -113,6 +120,7 @@ public class EnemyController : MonoBehaviour
                 _kickTimer = kickCooldown;
                 _currentState = AIState.Chase;
                 _justKicked = false;
+                _beforeKickTimer = timeBeforeKick;
             }
         }
     }
