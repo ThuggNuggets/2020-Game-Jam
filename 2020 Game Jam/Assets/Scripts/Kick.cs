@@ -77,6 +77,9 @@ public class Kick : MonoBehaviour
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(heavyKickForce * ((keyHoldTime < 0.1f) ? 0.1f : keyHoldTime), kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundHeavy.Play();
             }
+
+            EnemyController enemy = other.gameObject.GetComponent<EnemyController>();
+            enemy.SetStunned();
         }
     }
 

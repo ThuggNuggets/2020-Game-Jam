@@ -35,6 +35,8 @@ public class EnemyController : MonoBehaviour
     private Transform _transform;
     private Transform _closestHole;
     private bool _justKicked = false;
+    private bool _hasBeenKicked = false;
+    private float _lock_y_height = 0.0f;
     private float _kickTimer = 0.0f;
     private float _beforeKickTimer = 0.0f;
     private float _stunnedTimer = 0.0f;
@@ -59,6 +61,7 @@ public class EnemyController : MonoBehaviour
         _currentState = AIState.Chase;
         _kickTimer = kickCooldown;
         _beforeKickTimer = timeBeforeKick;
+        _lock_y_height = _transform.position.y;
     }
 
     private void Start()
@@ -72,8 +75,11 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void FixedUpdate()
     {
+        if (_transform.position.y > _lock_y_height)
+            _transform.position = new Vector3(_transform.position.x, _lock_y_height, _transform.position.z);
+
         // Updating the current state
-        switch(_currentState)
+        switch (_currentState)
         {
             case AIState.Stunned:
                 Stunned();
@@ -98,11 +104,13 @@ public class EnemyController : MonoBehaviour
     /// </summary>
     private void Stunned()
     {
+        _hasBeenKicked = true;
         _stunnedTimer -= Time.fixedDeltaTime;
         if (_stunnedTimer <= 0.0f)
         {
             _stunnedTimer = stunnedAfterKickTime;
             _currentState = AIState.Chase;
+            _hasBeenKicked = false;
         }
     }
 
@@ -121,6 +129,7 @@ public class EnemyController : MonoBehaviour
 
             // Rotate enemy to direction:
             Vector3 dir = GetDirection(_seekPosition);
+            dir.y = 0.0f;
             _transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
 
             // Add force:
@@ -261,6 +270,14 @@ public class EnemyController : MonoBehaviour
     {
         _stunnedTimer = stunnedAfterKickTime;
         _currentState = AIState.Stunned;
+    }
+
+    /// <summary>
+    /// Returns true if the enemy has been kicked.
+    /// </summary>
+    public bool HasBeenKicked
+    {
+        get { return _hasBeenKicked; }
     }
 
     /// <summary>

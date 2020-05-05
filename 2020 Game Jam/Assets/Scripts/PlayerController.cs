@@ -38,17 +38,20 @@ public class PlayerController : MonoBehaviour
     //public GameObject ProtagMeshBodyTexture;
     #endregion
 
+    public int scoreForKill = 100;
     public bool disableMove = false;
     public GameObject kickBox;
     public GameObject pauseMenu;
     public GameObject deathMenu;
     public GameObject chargeBar;
+    public TextMeshProUGUI scoreText;
 
     #region Private Variables
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
     private Vector2 input;
     private Vector3 moveVelocity;
+    private int totalScore = 0;
     #endregion
 
     #region Hidden Variable
@@ -78,6 +81,9 @@ public class PlayerController : MonoBehaviour
     {
         if (disableMove)
             return;
+
+        if (transform.position.y > startingHeight)
+            transform.position = new Vector3(transform.position.x, startingHeight, transform.position.z);
 
         #region Movement Update
         // Get the direction of input from the user
@@ -243,12 +249,19 @@ public class PlayerController : MonoBehaviour
             charRigidbody.AddForce(Vector3.down * 10.0f, ForceMode.Impulse);
             disableMove = true;
             charRigidbody.velocity = Vector3.zero;
+            HasDied();
         }
+    }
 
-        if (other.CompareTag("DPlane"))
-        {
-            StartCoroutine(Death());
-        }
+    public void KilledEnemy()
+    {
+        totalScore += scoreForKill;
+        scoreText.text = totalScore.ToString();
+    }
+
+    public void HasDied()
+    {
+        StartCoroutine(Death());
     }
 
 
@@ -264,6 +277,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         //Turn Dead screen on 
+        Time.timeScale = 0;
         deathMenu.SetActive(true);
     }
 }

@@ -18,8 +18,6 @@ public class EnemyManager : MonoBehaviour
     [Header("Enemy Properties")]
     public List<Transform> obstacles = new List<Transform>();
     public Transform playerTransform;
-    public float spawnCheckRadius = 2.0f;
-    public LayerMask spawnCheckLayer;
 
     // Privates
     private SpawnPoint[] _spawnPoints;
