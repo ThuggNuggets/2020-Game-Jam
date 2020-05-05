@@ -36,6 +36,7 @@ public class EnemyManager : MonoBehaviour
         {
             _spawnPoints[i] = spawnPointParent.GetChild(i).GetComponent<SpawnPoint>();
         }
+
     }
 
     /// <summary>

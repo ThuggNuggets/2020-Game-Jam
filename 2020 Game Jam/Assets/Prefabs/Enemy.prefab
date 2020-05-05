@@ -176,8 +176,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   avoidAngle: -120
-  avoidRecheckTime: 1
-  avoidRayDistance: 5
+  avoidRecheckTime: 0.7
+  avoidRayDistance: 6
 --- !u!82 &8833998092784753465
 AudioSource:
   m_ObjectHideFlags: 0
