@@ -166,12 +166,13 @@ MonoBehaviour:
   attackDistance: 2
   kickForce: 25
   kickCooldown: 1
+  timeBeforeKick: 1
   obstacleLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   avoidAngle: -120
   avoidRecheckTime: 0.7
-  avoidRayDistance: 2
+  avoidRayDistance: 4
 --- !u!1001 &6088580558447166445
 PrefabInstance:
   m_ObjectHideFlags: 0

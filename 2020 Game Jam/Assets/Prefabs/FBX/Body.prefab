@@ -60,8 +60,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3679208046109970942}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.006, y: -0.127, z: 0.899}
-  m_LocalScale: {x: 1.3992196, y: 1.161426, z: 1.4530033}
+  m_LocalPosition: {x: -0.006, y: -0.127, z: 2.02}
+  m_LocalScale: {x: 1.3992196, y: 1.161426, z: 3.7051582}
   m_Children: []
   m_Father: {fileID: 8924834110496201002}
   m_RootOrder: 0
@@ -356,7 +356,7 @@ GameObject:
   - component: {fileID: 2109993796}
   m_Layer: 0
   m_Name: Body
-  m_TagString: Enemy
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -496,7 +496,7 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4277741360118709469}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Avatar: {fileID: 0}
   m_Controller: {fileID: 9100000, guid: 06005f061a4500448937a5120a0eb5ba, type: 2}
   m_CullingMode: 0
