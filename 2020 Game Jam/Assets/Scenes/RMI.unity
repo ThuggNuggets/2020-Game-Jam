@@ -8841,6 +8841,11 @@ PrefabInstance:
       propertyPath: chargeBar
       value: 
       objectReference: {fileID: 522369386}
+    - target: {fileID: 4447256335623955141, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5820724284862113517, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
       propertyPath: m_Name
