@@ -9303,7 +9303,7 @@ PrefabInstance:
     - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
       propertyPath: turnSensitivity
-      value: 100
+      value: 200
       objectReference: {fileID: 0}
     - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
@@ -9315,6 +9315,11 @@ PrefabInstance:
       propertyPath: heavyKickForce
       value: 200
       objectReference: {fileID: 0}
+    - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: controller
+      value: 
+      objectReference: {fileID: 1166283298}
     - target: {fileID: 4447256336553194457, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
       propertyPath: m_Layer
