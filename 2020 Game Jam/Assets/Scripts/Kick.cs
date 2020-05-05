@@ -17,15 +17,17 @@ public class Kick : MonoBehaviour
     public float knockBackTimer = 0.1f;
     public AudioSource kickSoundLight;
     public AudioSource kickSoundHeavy;
+    public AudioSource gruntLight;
+    public AudioSource gruntHeavy;
     #endregion
     public GameObject blood; 
     public GameObject bloodParticle;
-
+    public MeshRenderer leg;
 
     #region Private Variables
     private GameObject kickBox;
     private GameObject player;
-    private readonly float keyPressTime = 0.35f;
+    private readonly float keyPressTime = 0.75f;
     private float tempKnockBackTimer = 0.0f;
     private bool kickCharging = false;
     private bool kickCharged = false;
@@ -52,6 +54,7 @@ public class Kick : MonoBehaviour
         kickBox = this.gameObject;
         player = GameObject.Find("Body");
         tempKnockBackTimer = knockBackTimer;
+        leg = GameObject.Find("LegR").GetComponent<MeshRenderer>();
     }
 
     private void Update()
@@ -72,6 +75,7 @@ public class Kick : MonoBehaviour
             {
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(lightKickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundLight.Play();
+                gruntLight.Play();
                 StartCoroutine(SlowTime());
                 Instantiate(blood,other.transform);
                 Instantiate(bloodParticle, other.transform);
@@ -83,10 +87,11 @@ public class Kick : MonoBehaviour
                 // If keyHoldTime is less than 0.1 second (0.1x multiplier) then just use 0.1x min force, otherwise heavyKickForce * keyHoldTime
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(heavyKickForce * ((keyHoldTime < 0.1f) ? 0.1f : keyHoldTime), kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundHeavy.Play();
+                gruntHeavy.Play();
                 StartCoroutine(SlowTimeHeavy());
                 Instantiate(blood, other.transform);
                 Instantiate(bloodParticle, other.transform);
-                CameraShaker.Instance.ShakeOnce(4f, 2f, 0.2f, 0.2f);
+                CameraShaker.Instance.ShakeOnce(7f, 6f, 0.2f, 0.2f);
             }
 
             EnemyController enemy = other.gameObject.GetComponent<EnemyController>();
@@ -218,24 +223,24 @@ public class Kick : MonoBehaviour
         //        getDirection = false;
         //    }
         //}
-    }        
-    
+    }
+
     IEnumerator SlowTime()
-        {
-            Time.timeScale = 0.7f;
+    {
+        Time.timeScale = 0.7f;
+        leg.enabled = true;
+        yield return new WaitForSeconds(0.1f);
 
-            yield return new WaitForSeconds(0.1f);
-
-            Time.timeScale = 1f;
-
-        }    
+        Time.timeScale = 1f;
+        leg.enabled = false;
+    }
     IEnumerator SlowTimeHeavy()
     {
-            Time.timeScale = 0.4f;
+        Time.timeScale = 0.3f;
+        leg.enabled = true;
+        yield return new WaitForSeconds(0.1f);
+        leg.enabled = false;
+        Time.timeScale = 1f;
 
-            yield return new WaitForSeconds(0.1f);
-
-            Time.timeScale = 1f;
-
-     }
+    }
 }

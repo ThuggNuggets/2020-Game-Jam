@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour
     public GameObject deathMenu;
     public GameObject chargeBar;
     public TextMeshProUGUI scoreText;
-
+    
     #region Private Variables
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
@@ -268,7 +268,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator Death()
     {
         //Play Death Audio 
-
+        
         //Turn off Player Charge Bar 
         chargeBar.SetActive(false);
 
@@ -277,7 +277,7 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(2);
 
         //Turn Dead screen on 
-        Time.timeScale = 0;
+        //Time.timeScale = 0;
         deathMenu.SetActive(true);
     }
 }

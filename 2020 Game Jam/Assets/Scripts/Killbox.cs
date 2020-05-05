@@ -5,7 +5,8 @@ using UnityEngine;
 public class Killbox : MonoBehaviour
 {
     public PlayerController playerController;
-
+    public AudioSource dying;
+    public AudioSource boo;
     private void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("Enemy"))
@@ -19,6 +20,8 @@ public class Killbox : MonoBehaviour
 
         if(other.CompareTag(playerController.gameObject.tag))
         {
+            boo.Play();
+            dying.Play();
             playerController.HasDied();
         }
     }

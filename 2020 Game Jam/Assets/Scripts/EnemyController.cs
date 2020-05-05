@@ -7,6 +7,7 @@ public class EnemyController : MonoBehaviour
     [Header("References")]
     public Transform playerTransform;
     public List<Transform> obstacles = new List<Transform>();
+    public AudioSource playerHit;
 
     [Header("General Properties")]
     public float maxVelocity = 8.0f;
@@ -164,6 +165,7 @@ public class EnemyController : MonoBehaviour
             _beforeKickTimer -= Time.deltaTime;
             if (!_justKicked && _beforeKickTimer <= 0.0f)
             {
+                playerHit.Play();
                 _playerRigidbody.AddForce(_kickDirection * kickForce, ForceMode.Impulse);
                 _justKicked = true;
                 _beforeKickTimer = timeBeforeKick;
