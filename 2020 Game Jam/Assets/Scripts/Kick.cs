@@ -239,12 +239,7 @@ public class Kick : MonoBehaviour
     private bool GetInputButtonDown()
     {
         if (controller.xboxController == XboxController.First)
-        {
-            bool r = XCI.GetButtonDown(kickButton, XboxController.First);
-            if (r)
-                return true;
-            return r;
-        }
+            return XCI.GetButtonDown(kickButton, XboxController.First);
         else
             return Input.GetMouseButtonDown(mouseButton);
     }
