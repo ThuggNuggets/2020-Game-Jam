@@ -12,7 +12,7 @@ public class ChargeBar : MonoBehaviour
     private Vector3 chargeBarScale;
     private Vector3 temp;
     private Kick kick;
-
+    public GameObject chargePos;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +26,7 @@ public class ChargeBar : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        gameObject.transform.position = Camera.main.WorldToScreenPoint(chargePos.transform.position);
         // Math to make the timer match the scale of the bar
         keyHoldTimer = kick.keyHoldTime / kick.keyHoldMaxTime * maxScale;
 

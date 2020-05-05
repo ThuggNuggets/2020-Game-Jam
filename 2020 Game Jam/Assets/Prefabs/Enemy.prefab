@@ -157,7 +157,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerTransform: {fileID: 0}
-  obstacles: []
+  obstacles:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   maxVelocity: 8
   acceleration: 10
   attackDistance: 3
@@ -169,8 +173,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   avoidAngle: -120
-  avoidRecheckTime: 0.7
-  avoidRayDistance: 4
+  avoidRecheckTime: 1
+  avoidRayDistance: 5
 --- !u!1001 &6088580558447166445
 PrefabInstance:
   m_ObjectHideFlags: 0

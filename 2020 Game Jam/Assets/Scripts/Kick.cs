@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using EZCameraShake;
 public class Kick : MonoBehaviour
 {
     #region Public Variables
@@ -18,6 +18,9 @@ public class Kick : MonoBehaviour
     public AudioSource kickSoundLight;
     public AudioSource kickSoundHeavy;
     #endregion
+    public GameObject blood; 
+    public GameObject bloodParticle;
+
 
     #region Private Variables
     private GameObject kickBox;
@@ -69,6 +72,10 @@ public class Kick : MonoBehaviour
             {
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(lightKickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundLight.Play();
+                StartCoroutine(SlowTime());
+                Instantiate(blood,other.transform);
+                Instantiate(bloodParticle, other.transform);
+                CameraShaker.Instance.ShakeOnce(2f, 2f, 0.1f, 0.1f);
             }
             // Check for Heavy Kick Collision
             else if (kickState == KickType.heavyKick && Input.GetMouseButtonUp(0))
@@ -76,6 +83,10 @@ public class Kick : MonoBehaviour
                 // If keyHoldTime is less than 0.1 second (0.1x multiplier) then just use 0.1x min force, otherwise heavyKickForce * keyHoldTime
                 other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(heavyKickForce * ((keyHoldTime < 0.1f) ? 0.1f : keyHoldTime), kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundHeavy.Play();
+                StartCoroutine(SlowTimeHeavy());
+                Instantiate(blood, other.transform);
+                Instantiate(bloodParticle, other.transform);
+                CameraShaker.Instance.ShakeOnce(4f, 2f, 0.2f, 0.2f);
             }
 
             EnemyController enemy = other.gameObject.GetComponent<EnemyController>();
@@ -183,6 +194,8 @@ public class Kick : MonoBehaviour
             }
         }
 
+
+
         //if (LightKickUsed)
         //{
         //    // Get the direction to push player back just once
@@ -205,5 +218,24 @@ public class Kick : MonoBehaviour
         //        getDirection = false;
         //    }
         //}
-    }
+    }        
+    
+    IEnumerator SlowTime()
+        {
+            Time.timeScale = 0.7f;
+
+            yield return new WaitForSeconds(0.1f);
+
+            Time.timeScale = 1f;
+
+        }    
+    IEnumerator SlowTimeHeavy()
+    {
+            Time.timeScale = 0.4f;
+
+            yield return new WaitForSeconds(0.1f);
+
+            Time.timeScale = 1f;
+
+     }
 }
