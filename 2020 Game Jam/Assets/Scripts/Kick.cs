@@ -50,7 +50,7 @@ public class Kick : MonoBehaviour
 
         InteractKeyClear();
 
-        Debug.Log(kickState);
+        //Debug.Log(kickState);
     }
 
     private void OnTriggerStay(Collider other)

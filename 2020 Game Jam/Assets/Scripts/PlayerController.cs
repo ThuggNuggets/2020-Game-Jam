@@ -85,7 +85,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        //if(pauseMenu.activeSelf == false)
+
         #region Movement Update
         // Get the direction of input from the user
         input = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
