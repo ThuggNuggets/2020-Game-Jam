@@ -1,32 +1,46 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using EZCameraShake;
 
 public class Kick : MonoBehaviour
 {
+    #region Public Variables
     [Range(0, 5000)]
-    public float kickForce = 100.0f;
+    public float lightKickForce = 20.0f;
+    [Range(0, 5000)]
+    public float heavyKickForce = 100.0f;
     [Range(0.0f, 2.0f)]
-    public float upwardsForce = 1.3f;
-    public AudioSource kickSoundLight;
-    public AudioSource kickSoundHeavy;
-    private GameObject kickBox;
-    private GameObject player;
-    public GameObject bloodParticle;
-    public GameObject blood;
-    [HideInInspector]
-    public float keyHoldTime;
+    public float upwardsForce = 1.1f;
+    public float playerHeavyKickBackForce = 30.0f;
     [Range(0.5f, 5.0f)]
     public float keyHoldMaxTime = 2.0f;
+    public float knockBackTimer = 0.1f;
+    public AudioSource kickSoundLight;
+    public AudioSource kickSoundHeavy;
+    #endregion
+
+    #region Private Variables
+    private GameObject kickBox;
+    private GameObject player;
     private readonly float keyPressTime = 0.35f;
+    private float tempKnockBackTimer = 0.0f;
     private bool kickCharging = false;
+    private bool kickCharged = false;
+    private bool timerGoDown = false;
+    private bool heavyKickUsed = false;
+    private bool getDirection = false;
+    private bool doPlayerKnockback = false;
+    private Vector3 knockbackDirection;
+    #endregion
+
+    [HideInInspector]
+    public float keyHoldTime;
 
     enum KickType
     {
         none,
         lightKick,
-        chargeKick
+        heavyKick
     }
     KickType kickState;
 
@@ -34,51 +48,35 @@ public class Kick : MonoBehaviour
     {
         kickBox = this.gameObject;
         player = GameObject.Find("Player");
+        tempKnockBackTimer = knockBackTimer;
     }
 
     private void Update()
     {
-        //if (Input.GetButtonDown("Interact")) // Check for key press
-        //    keyHoldTime = 0;
-        //if (Input.GetButton("Interact")) // or key hold
-        //    keyHoldTime += Time.deltaTime;
-
-        //if (keyHoldTime < medvialPressTime)
-        //    medvialPressed = true;
-
         CheckInteractKey();
-
+        KnockbackOnKick();
         InteractKeyClear();
 
-        //Debug.Log(kickState);
+        Debug.Log(kickState);
     }
 
     private void OnTriggerStay(Collider other)
     {
-        //Rigidbody enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<Rigidbody>();
-
         if (other.CompareTag("Enemy"))
         {
+            // Check for Light Kick Collision
             if (kickState == KickType.lightKick && Input.GetMouseButtonUp(0))
             {
-                other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(kickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
+                other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(lightKickForce, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundLight.Play();
-                Instantiate(bloodParticle, other.transform);
-                Instantiate(blood, other.transform);
-                CameraShaker.Instance.ShakeOnce(5f,1f,0.1f,0.1f);
             }
-            else if (kickState == KickType.chargeKick && Input.GetMouseButtonUp(0))
+            // Check for Heavy Kick Collision
+            else if (kickState == KickType.heavyKick && Input.GetMouseButtonUp(0))
             {
-                other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(kickForce * keyHoldTime, kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
+                // If keyHoldTime is less than 0.1 second (0.1x multiplier) then just use 0.1x min force, otherwise heavyKickForce * keyHoldTime
+                other.gameObject.GetComponent<Rigidbody>().AddExplosionForce(heavyKickForce * ((keyHoldTime < 0.1f) ? 0.1f : keyHoldTime), kickBox.transform.position + -player.transform.forward, 5.0f, upwardsForce, ForceMode.Force);
                 kickSoundHeavy.Play();
-                Instantiate(bloodParticle, other.transform);
-                Instantiate(blood, other.transform);
-                CameraShaker.Instance.ShakeOnce(10f, 5f, 0.3f, 0.3f);
-                StartCoroutine(SlowTime());
             }
-            //enemy.AddExplosionForce((player.GetComponent<Rigidbody>().velocity.magnitude <= 0.1f ? kickForce : (kickForce * player.GetComponent<Rigidbody>().velocity.magnitude)), 
-            //    kickBox.transform.position + -player.transform.forward, 5.0f);
-            Debug.Log("Enemy in range");
         }
     }
 
@@ -89,19 +87,52 @@ public class Kick : MonoBehaviour
         if (Input.GetMouseButton(0))
         {
             kickCharging = true;
-            keyHoldTime += Time.deltaTime;
+
+            // Make the bar go up and down
+            if (!kickCharged && !timerGoDown || kickCharged && !timerGoDown)
+            {
+                keyHoldTime += Time.deltaTime;
+            }
+            else if (kickCharged && timerGoDown)
+            {
+                keyHoldTime -= Time.deltaTime;
+                if (keyHoldTime <= 0.0f) // Reset the timer to go back up
+                    timerGoDown = false;
+            }
+
+            // On first full hold of the charge bar
             if (keyHoldTime >= keyHoldMaxTime)
+            {
                 keyHoldTime = keyHoldMaxTime;
+                kickCharged = true;
+                timerGoDown = true;
+                Debug.Log("KICK CHARGED");
+            }
         }
 
         //Debug.Log(keyHoldTime);
 
-        if (kickCharging && keyHoldTime > keyPressTime)
-            kickState = KickType.chargeKick;
-        else if (keyHoldTime < keyPressTime && Input.GetMouseButtonDown(0) && kickState == KickType.none)
+        // -=-HEAVY KICK-=-
+        if (kickCharging && keyHoldTime > keyPressTime || kickCharged)  // Need to check for holding heavy kick charging first                                                    
+        {                                                               // before the light kick
+            kickState = KickType.heavyKick;
+            // Reset values when the play releases the mouse button
+            if (Input.GetMouseButtonUp(0))
+            {
+                heavyKickUsed = true;
+                kickCharging = false;
+                kickCharged = false;
+                timerGoDown = false;
+            }
+        }
+        // -=-LIGHT KICK-=-
+        else if (keyHoldTime < keyPressTime && !kickCharged && Input.GetMouseButtonDown(0) && kickState == KickType.none)
+        {
             kickState = KickType.lightKick;
+        }
     }
 
+    // Reset some values when button is released
     void InteractKeyClear()
     {
         if (Input.GetMouseButtonUp(0))
@@ -111,10 +142,65 @@ public class Kick : MonoBehaviour
         }
     }
 
-    private IEnumerator SlowTime()
+    // Knock the player back upon using heavy kick
+    void KnockbackOnKick()
     {
-        Time.timeScale = 0.4f;
-        yield return new WaitForSeconds(0.1f);
-        Time.timeScale = 1;        
+        if (heavyKickUsed)
+        {
+            // Get the direction to push player back just once
+            if (!getDirection)
+            {
+                knockbackDirection = -transform.forward;
+                getDirection = true;
+            }
+
+            knockBackTimer -= Time.deltaTime;
+
+            // While the knockback timer hasn't reached zero, continue applying force on the player
+            if (knockBackTimer > 0.0f)
+            {
+                // Only get player knockback if you get 75% power on the kick
+                if (keyHoldTime >= (keyHoldMaxTime * 0.75f))
+                    doPlayerKnockback = true;
+
+                if (doPlayerKnockback)
+                {
+                    player.GetComponent<Rigidbody>().AddForce(knockbackDirection.normalized * playerHeavyKickBackForce, ForceMode.Impulse);
+                    Debug.Log("KeyHoldTime release: " + keyHoldTime);
+                }
+            }
+
+            // When it reaches zero, reset everything
+            if (knockBackTimer <= 0.0f)
+            {
+                knockBackTimer = tempKnockBackTimer;
+                heavyKickUsed = false;
+                getDirection = false;
+                doPlayerKnockback = false;
+            }
+        }
+
+        //if (LightKickUsed)
+        //{
+        //    // Get the direction to push player back just once
+        //    if (!getDirection)
+        //    {
+        //        knockbackDirection = -transform.forward;
+        //        getDirection = true;
+        //    }
+
+        //    knockBackTimer -= Time.deltaTime;
+        //    if (knockBackTimer > 0.0f)
+        //    {
+        //        player.GetComponent<Rigidbody>().AddForce(knockbackDirection.normalized * playerLightKickBackForce, ForceMode.Impulse);
+        //    }
+
+        //    if (knockBackTimer <= 0.0f)
+        //    {
+        //        knockBackTimer = tempKnockBackTimer;
+        //        LightKickUsed = false;
+        //        getDirection = false;
+        //    }
+        //}
     }
 }

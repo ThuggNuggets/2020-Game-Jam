@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1565985740391906824}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: Player 1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38,10 +38,39 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1565985740391906824}
     m_Modifications:
+    - target: {fileID: 895541848, guid: 40c598a86260dac43a5267a8bb820850, type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3679208046109970942, guid: 40c598a86260dac43a5267a8bb820850,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 3967345939503599834, guid: 40c598a86260dac43a5267a8bb820850,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
     - target: {fileID: 4277741360118709469, guid: 40c598a86260dac43a5267a8bb820850,
         type: 3}
       propertyPath: m_Name
       value: Body
+      objectReference: {fileID: 0}
+    - target: {fileID: 4277741360118709469, guid: 40c598a86260dac43a5267a8bb820850,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8175041158350691655, guid: 40c598a86260dac43a5267a8bb820850,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8374038385993862721, guid: 40c598a86260dac43a5267a8bb820850,
+        type: 3}
+      propertyPath: m_Layer
+      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 8924834110496201002, guid: 40c598a86260dac43a5267a8bb820850,
         type: 3}

@@ -52,14 +52,19 @@ public class EnemyController : MonoBehaviour
     private void Awake()
     {
         // Getting components
-        _rigidbody = GetComponent<Rigidbody>();
-        _playerRigidbody = playerTransform.GetComponent<Rigidbody>();
         _transform = GetComponent<Transform>();
+        _rigidbody = GetComponent<Rigidbody>();
 
         // Setting variables
         _currentState = AIState.Chase;
         _kickTimer = kickCooldown;
         _beforeKickTimer = timeBeforeKick;
+    }
+
+    private void Start()
+    {
+        // Getting player rigidbody
+        _playerRigidbody = playerTransform.GetComponent<Rigidbody>();
     }
 
     /// <summary>
@@ -140,10 +145,12 @@ public class EnemyController : MonoBehaviour
     private void Attack()
     {
         // Rotate enemy to direction:
-        _transform.rotation = Quaternion.LookRotation(_kickDirection, Vector3.up);
+        if(_kickDirection.magnitude > 0)
+            _transform.rotation = Quaternion.LookRotation(_kickDirection, Vector3.up);
 
         if (GetDistanceToPlayer() < attackDistance)
         {
+            Debug.Log("Kicking");
             _rigidbody.velocity = Vector3.zero;
             _beforeKickTimer -= Time.deltaTime;
             if (!_justKicked && _beforeKickTimer <= 0.0f)
@@ -254,5 +261,16 @@ public class EnemyController : MonoBehaviour
     {
         _stunnedTimer = stunnedAfterKickTime;
         _currentState = AIState.Stunned;
+    }
+
+    /// <summary>
+    /// Sets up references to other enemy components.
+    /// </summary>
+    /// <param name="playerTransform"> The player. </param>
+    /// <param name="obstacles"> The holes. </param>
+    public void SetupReferences(Transform playerTransform, List<Transform> obstacles)
+    {
+        this.playerTransform = playerTransform;
+        this.obstacles = obstacles;
     }
 }

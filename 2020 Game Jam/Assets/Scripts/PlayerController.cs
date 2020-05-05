@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using TMPro;
-using UnityEngine.SceneManagement;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,17 +13,16 @@ public class PlayerController : MonoBehaviour
     #endregion
     #region Movement
     public float walkSpeed = 5;
-    //public float runSpeed = 10; // For Debug purposes [REMOVE IN ALPHA]
-    public float turnSmoothTime = 0.1f;
-    public float speedSmoothTime = 0.1f;
-    public float gravityModifier = 10.0f;
+    readonly float speedSmoothTime = 0.1f;
+    float speedSmoothVelocity;
+    float currentSpeed;
     #endregion
     #region Knockback
-    public float invulnerabilityTime = 0.5f;
-    public float knockBackForce = 150f;
-    public float knockBackTime = 0.45f;
-    private float knockBackCounter;
-    public float slowDownAmount = 0.2f;
+    //public float invulnerabilityTime = 0.5f;
+    //public float knockBackForce = 150f;
+    //public float knockBackTime = 0.45f;
+    //private float knockBackCounter;
+    //public float slowDownAmount = 0.2f;
     #endregion
     #region Main Menu
     //public string MainMenuName = "Main Menu";
@@ -39,22 +39,11 @@ public class PlayerController : MonoBehaviour
 
     public bool disableMove = false;
 
-    float turnSmoothVelocity;
-    float speedSmoothVelocity;
-    float currentSpeed;
-    public GameObject kickBox;
-    public GameObject pauseMenu;
-    public GameObject deathMenu;
-    public GameObject chargeBar;
     #region Private Variables
-    //private CharacterController controller;
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
-
-    private float fallAmount;
-    private Vector3 velocity;
-    private Vector3 gravity;
     private Vector2 input;
+    private Vector3 moveVelocity;
     #endregion
 
     #region Hidden Variable
@@ -75,108 +64,92 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        gravity = Physics.gravity * gravityModifier;
-
         playerCollider = GetComponent<CapsuleCollider>();
         charRigidbody = GetComponent<Rigidbody>();
         startingHeight = transform.position.y;
-        fallAmount = startingHeight + 5.0f;
     }
 
     void Update()
     {
-
         #region Movement Update
         // Get the direction of input from the user
-        input = new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));
-        
+        input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        moveVelocity = new Vector3(input.x, 0.0f, input.y) * currentSpeed;
+        moveVelocity.y = charRigidbody.velocity.y;
+
         // Normalize the input
         Vector2 inputDir = input.normalized;
 
-        bool movementDisabled = false;
-        // Debug addition to get around faster
-        //bool running = Input.GetKey(KeyCode.LeftShift);
-        // Set to walkSpeed in alpha test
-        float targetSpeed = (/*(running) ? runSpeed : */walkSpeed) * inputDir.magnitude;
+        //bool movementDisabled = false;
+        float targetSpeed = walkSpeed * inputDir.magnitude;
         // Speed up the player overtime when they move
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
 
-        if (inputDir != Vector2.zero)
-        {
-            /* ***THIS CODE LOCKS THE PLAYER ROTATION WHEN ATTACKING ANIMATION IS PLAYING***
-            if (!(meleeSwipe.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1) && !meleeSwipe.IsInTransition(0))
-            {*/
-            // Set the target rotation to be equal to the direction that the player is facing
-            float targetRotation = Mathf.Atan2(inputDir.x, inputDir.y) * Mathf.Rad2Deg;
-            // Change the rotation to the player to be equal to that direction with smoothing
-            transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
-            charRigidbody.MovePosition(transform.position + transform.forward * currentSpeed * Time.deltaTime);
-            
-            //if (!movementDisabled && !disableMove)
-            //{
+        // Set the target rotation to be equal to the direction of the mouse
+        Vector3 mousePosition3D = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
+        transform.LookAt(mousePosition3D);
 
-            //    // Move the character relevant to the set current speed
-            //    //controller.Move((transform.forward * currentSpeed) * Time.deltaTime);
-            //}
-            //else
-            //{
-            //    Vector3 dir = new Vector3(inputDir.x, 0, inputDir.y);
+        charRigidbody.velocity = moveVelocity;
+        #endregion
 
-            //    if (!movementDisabled && !disableMove)
-            //        //controller.Move((dir * currentSpeed) * Time.deltaTime);
-            //        charRigidbody.MovePosition((dir * currentSpeed) * Time.deltaTime);
-            //}
-            //}
-        }
+        #region Old Stuff
+        //    if (inputDir != Vector2.zero)
+        //    {
+        //        ***THIS CODE LOCKS THE PLAYER ROTATION WHEN ATTACKING ANIMATION IS PLAYING***
+        //        if (!(meleeSwipe.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1) && !meleeSwipe.IsInTransition(0))
+
+
+        //            if (!movementDisabled && !disableMove)
+        //            {
+
+        //                // Move the character relevant to the set current speed
+        //                //controller.Move((transform.forward * currentSpeed) * Time.deltaTime);
+        //            }
+        //            else
+        //            {
+        //                Vector3 dir = new Vector3(inputDir.x, 0, inputDir.y);
+
+        //                if (!movementDisabled && !disableMove)
+        //                    charRigidbody.MovePosition((dir * currentSpeed) * Time.deltaTime);
+        //            }
+        //    }
+        //}
 
         //if (!movementDisabled && !disableMove)
-        //    //controller.Move(velocity * Time.deltaTime);
         //    charRigidbody.MovePosition(velocity * Time.deltaTime);
         #endregion
 
         #region Knockback Update
-        // Add gravity to the player
-        velocity += gravity * Time.deltaTime;
+        //// Subtract the velocity by the slowDownAmount to slow down the knockback
+        //velocity -= velocity * slowDownAmount;
 
-        // Subtract the velocity by the slowDownAmount to slow down the knockback
-        velocity -= velocity * slowDownAmount;
+        //// If the velocity gets below a certain threshold, set it to zero
+        //if (velocity.magnitude < 0.35f)
+        //    velocity = Vector3.zero;
 
-        // If the velocity gets below a certain threshold, set it to zero
-        if (velocity.magnitude < 0.35f)
-            velocity = Vector3.zero;
-
-        // Only use the timer if the counter has been activated
-        if (knockBackCounter > 0)
-        {
-            movementDisabled = true;
-            knockBackCounter -= Time.deltaTime;
-        }
-        // Once the Counter reaches 0, removes the force applied to the enemy
-        else if (knockBackCounter <= 0)
-        {
-            movementDisabled = false;
-        }
+        //// Only use the timer if the counter has been activated
+        //if (knockBackCounter > 0)
+        //{
+        //    movementDisabled = true;
+        //    knockBackCounter -= Time.deltaTime;
+        //}
+        //// Once the Counter reaches 0, removes the force applied to the enemy
+        //else if (knockBackCounter <= 0)
+        //{
+        //    movementDisabled = false;
+        //}
         #endregion
 
         #region Health Update
-        if (currentHealth > maxHealth)
-            currentHealth = maxHealth;
-        else if (currentHealth <= 0)
-            currentHealth = 0;
+        //if (currentHealth > maxHealth)
+        //    currentHealth = maxHealth;
+        //else if (currentHealth <= 0)
+        //    currentHealth = 0;
         #endregion
 
-        if (Input.GetKeyDown(KeyCode.Escape) && deathMenu.activeSelf == false)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            pauseMenu.SetActive(true);
-            Time.timeScale = 0;
-        }
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("DPlane"))
-        {
-            StartCoroutine(Death());
+            Application.Quit();
         }
     }
 
@@ -253,19 +226,4 @@ public class PlayerController : MonoBehaviour
     //    velocity += playerMoveDirection;
     //}
     #endregion
-
-    private IEnumerator Death()
-    {
-        //Play Death Audio
-
-        //Turn off Player Charge Bar
-        chargeBar.SetActive(false);
-        
-        //stop spawning enemies
-        
-        yield return new WaitForSeconds(2);
-
-        //Turn Dead screen on
-        deathMenu.SetActive(true);
-    }
 }
