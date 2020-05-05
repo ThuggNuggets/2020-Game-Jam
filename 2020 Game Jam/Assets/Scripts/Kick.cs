@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using EZCameraShake;
+using XboxCtrlrInput;
+
+
 public class Kick : MonoBehaviour
 {
     #region Public Variables
@@ -23,6 +26,13 @@ public class Kick : MonoBehaviour
     public GameObject blood; 
     public GameObject bloodParticle;
     public MeshRenderer leg;
+    public PlayerController controller;
+
+    // Xbox Controller Input
+    [Header("Input")]
+    public XboxButton kickButton;
+    [Range(0, 1)]
+    public int mouseButton = 0;
 
     #region Private Variables
     private GameObject kickBox;
@@ -64,7 +74,7 @@ public class Kick : MonoBehaviour
         KnockbackOnKick();
         InteractKeyClear();
 
-        Debug.Log(kickState);
+        //Debug.Log(kickState);
     }
 
     private void OnTriggerStay(Collider other)
@@ -102,9 +112,9 @@ public class Kick : MonoBehaviour
 
     void CheckInteractKey()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (GetInputButtonDown())
             keyHoldTime = 0;
-        if (Input.GetMouseButton(0))
+        if (GetInputButtonStay())
         {
             kickCharging = true;
 
@@ -137,7 +147,7 @@ public class Kick : MonoBehaviour
         {                                                               // before the light kick
             kickState = KickType.heavyKick;
             // Reset values when the play releases the mouse button
-            if (Input.GetMouseButtonUp(0))
+            if (GetInputButtonUp())
             {
                 heavyKickUsed = true;
                 kickCharging = false;
@@ -146,7 +156,7 @@ public class Kick : MonoBehaviour
             }
         }
         // -=-LIGHT KICK-=-
-        else if (keyHoldTime < keyPressTime && !kickCharged && Input.GetMouseButtonDown(0) && kickState == KickType.none)
+        else if (keyHoldTime < keyPressTime && !kickCharged && GetInputButtonDown() && kickState == KickType.none)
         {
             kickState = KickType.lightKick;
         }
@@ -155,7 +165,7 @@ public class Kick : MonoBehaviour
     // Reset some values when button is released
     void InteractKeyClear()
     {
-        if (Input.GetMouseButtonUp(0))
+        if (GetInputButtonUp())
         {
             keyHoldTime = 0;
             kickState = KickType.none;
@@ -224,6 +234,35 @@ public class Kick : MonoBehaviour
         //        getDirection = false;
         //    }
         //}
+    }
+
+    private bool GetInputButtonDown()
+    {
+        if (controller.xboxController == XboxController.First)
+        {
+            bool r = XCI.GetButtonDown(kickButton, XboxController.First);
+            if (r)
+                return true;
+            return r;
+        }
+        else
+            return Input.GetMouseButtonDown(mouseButton);
+    }
+
+    private bool GetInputButtonStay()
+    {
+        if (controller.xboxController == XboxController.First)
+            return XCI.GetButton(kickButton, XboxController.First);
+        else
+            return Input.GetMouseButton(mouseButton);
+    }
+
+    private bool GetInputButtonUp()
+    {
+        if (controller.xboxController == XboxController.First)
+            return XCI.GetButtonUp(kickButton, XboxController.First);
+        else
+            return Input.GetMouseButtonUp(mouseButton);
     }
 
     IEnumerator SlowTime()

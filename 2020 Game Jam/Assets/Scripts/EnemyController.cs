@@ -160,7 +160,6 @@ public class EnemyController : MonoBehaviour
 
         if (GetDistanceToPlayer() < attackDistance)
         {
-            Debug.Log("Kicking");
             _rigidbody.velocity = Vector3.zero;
             _beforeKickTimer -= Time.deltaTime;
             if (!_justKicked && _beforeKickTimer <= 0.0f)

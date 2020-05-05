@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
+using XboxCtrlrInput;
 
 public class PlayerController : MonoBehaviour
 {
@@ -45,7 +46,12 @@ public class PlayerController : MonoBehaviour
     public GameObject deathMenu;
     public GameObject chargeBar;
     public TextMeshProUGUI scoreText;
-    
+
+    // Xbox Controller Input
+    [Header("Xbox Controller Input")]
+    public float turnSensitivity = 100.0f;
+    public XboxController xboxController;
+
     #region Private Variables
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
@@ -75,6 +81,12 @@ public class PlayerController : MonoBehaviour
         playerCollider = GetComponent<CapsuleCollider>();
         charRigidbody = GetComponent<Rigidbody>();
         startingHeight = transform.position.y;
+
+        // Checking for any connected controllers and defaulting to first if true:
+        if (FindConnectedControllers())
+            xboxController = XboxController.First;
+        else
+            xboxController = (XboxController)(-1);
     }
 
     void Update()
@@ -87,7 +99,11 @@ public class PlayerController : MonoBehaviour
 
         #region Movement Update
         // Get the direction of input from the user
-        input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+        if (xboxController == XboxController.First)
+            input = new Vector2(XCI.GetAxis(XboxAxis.LeftStickX, XboxController.First), XCI.GetAxis(XboxAxis.LeftStickY, XboxController.First));
+        else
+            input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
         moveVelocity = new Vector3(input.x, 0.0f, input.y) * currentSpeed;
         moveVelocity.y = charRigidbody.velocity.y;
 
@@ -100,8 +116,16 @@ public class PlayerController : MonoBehaviour
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
 
         // Set the target rotation to be equal to the direction of the mouse
-        Vector3 mousePosition3D = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
-        transform.LookAt(mousePosition3D);
+        if (xboxController == XboxController.First)
+        {
+            // Calculating the transforms rotation based on the rotation axis:
+            transform.Rotate((transform.up * XCI.GetAxis(XboxAxis.RightStickX, XboxController.First)) * turnSensitivity * Time.deltaTime);
+        }
+        else
+        {
+            Vector3 mousePosition3D = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, Camera.main.transform.position.y - transform.position.y));
+            transform.LookAt(mousePosition3D);
+        }
 
         charRigidbody.velocity = moveVelocity;
         #endregion
@@ -251,6 +275,26 @@ public class PlayerController : MonoBehaviour
             charRigidbody.velocity = Vector3.zero;
             HasDied();
         }
+    }
+
+    private bool FindConnectedControllers()
+    {
+        // Getting the amound of controllers plugged in:
+        int connectedControllers = XCI.GetNumPluggedCtrlrs();
+
+        // Printing the amount of connected controllers to the log:
+        if (connectedControllers == 0)
+            Debug.Log("No Xbox controllers plugged in!");
+        else
+        {
+            Debug.Log(connectedControllers + " Xbox controllers plugged in.");
+        }
+
+        // Printing the controller names:
+        XCI.DEBUG_LogControllerNames();
+
+        // Returning true if any controllers found:
+        return connectedControllers > 0;
     }
 
     public void KilledEnemy()

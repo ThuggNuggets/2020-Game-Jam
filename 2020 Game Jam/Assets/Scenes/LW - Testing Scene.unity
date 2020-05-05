@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -2359,6 +2359,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   chargeBlock: {fileID: 1966507653}
   maxScale: 2.7
+  chargePos: {fileID: 1873919786}
 --- !u!1 &542062082
 GameObject:
   m_ObjectHideFlags: 0
@@ -4238,6 +4239,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerController: {fileID: 1166283298}
+  dying: {fileID: 0}
+  boo: {fileID: 0}
 --- !u!1 &1030656095
 GameObject:
   m_ObjectHideFlags: 0
@@ -7655,6 +7658,12 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1871363170}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1873919786 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4447256336553194457, guid: 6a83ebeba5495764eb2851273dee7843,
+    type: 3}
+  m_PrefabInstance: {fileID: 7414928412462986840}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1918573072
 GameObject:
   m_ObjectHideFlags: 0
@@ -9291,6 +9300,11 @@ PrefabInstance:
       propertyPath: scoreText
       value: 
       objectReference: {fileID: 1384427153}
+    - target: {fileID: 4447256335565931316, guid: 6a83ebeba5495764eb2851273dee7843,
+        type: 3}
+      propertyPath: turnSensitivity
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4447256335932635329, guid: 6a83ebeba5495764eb2851273dee7843,
         type: 3}
       propertyPath: lightKickForce
