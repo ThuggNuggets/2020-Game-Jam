@@ -29,6 +29,7 @@ public class EnemyController : MonoBehaviour
     // Private instances / variables:
     private Rigidbody _rigidbody;
     private Rigidbody _playerRigidbody;
+    private PlayerController _playerController;
     private Vector3 _direction = Vector3.zero;
     private Vector3 _avoidDirection = Vector3.zero;
     private Vector3 _kickDirection = Vector3.zero;
@@ -135,7 +136,7 @@ public class EnemyController : MonoBehaviour
 
             // Add force:
             if (_rigidbody.velocity.magnitude < maxVelocity)
-               _rigidbody.AddForce(dir * acceleration * Time.fixedDeltaTime, ForceMode.Impulse);
+                _rigidbody.AddForce(dir * acceleration * Time.fixedDeltaTime, ForceMode.Impulse);
         }
         else
         {
@@ -156,7 +157,7 @@ public class EnemyController : MonoBehaviour
     {
         // Rotate enemy to direction:
         if(_kickDirection.magnitude > 0)
-            _transform.rotation = Quaternion.LookRotation(_kickDirection, Vector3.up);
+           _transform.rotation = Quaternion.LookRotation(_kickDirection, Vector3.up);
 
         if (GetDistanceToPlayer() < attackDistance)
         {
@@ -166,6 +167,7 @@ public class EnemyController : MonoBehaviour
             {
                 playerHit.Play();
                 _playerRigidbody.AddForce(_kickDirection * kickForce, ForceMode.Impulse);
+                _playerController.SetStunned();
                 _justKicked = true;
                 _beforeKickTimer = timeBeforeKick;
             }
@@ -207,6 +209,7 @@ public class EnemyController : MonoBehaviour
     public Vector3 GetDirection(Vector3 seekPos)
     {
         _direction = (seekPos - _transform.position).normalized;
+        Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.red);
         if (_avoidDirection.magnitude <= 0)
         {
             RaycastHit hit;
@@ -214,6 +217,7 @@ public class EnemyController : MonoBehaviour
             {
                 if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
                 {
+                    Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.green);
                     _rigidbody.velocity = Vector3.zero;
                     _avoidDirection = Quaternion.AngleAxis(avoidAngle, Vector3.up) * hit.normal;
                     StartCoroutine(CheckSequence());
@@ -290,5 +294,6 @@ public class EnemyController : MonoBehaviour
     {
         this.playerTransform = playerTransform;
         this.obstacles = obstacles;
+        this._playerController = playerTransform.GetComponent<PlayerController>();
     }
 }

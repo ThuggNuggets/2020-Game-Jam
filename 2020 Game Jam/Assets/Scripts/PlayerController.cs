@@ -19,26 +19,8 @@ public class PlayerController : MonoBehaviour
     float speedSmoothVelocity;
     float currentSpeed;
     #endregion
-    #region Knockback
-    //public float invulnerabilityTime = 0.5f;
-    //public float knockBackForce = 150f;
-    //public float knockBackTime = 0.45f;
-    //private float knockBackCounter;
-    //public float slowDownAmount = 0.2f;
-    #endregion
-    #region Main Menu
-    //public string MainMenuName = "Main Menu";
-    //public bool DeathToMenu = false;
-    //public float DeathToMenuTimer = 4;
-    //private float DeathToMenuIterator = 0;
-    #endregion
-    #region Materials & Textures
-    //public Material invulnerable;
-    //public Material vulnerable;
-    //public GameObject ProtagMesh;
-    //public GameObject ProtagMeshBodyTexture;
-    #endregion
 
+    public float stunnedAfterKickTime = 1.0f;
     public int scoreForKill = 100;
     public bool disableMove = false;
     public GameObject kickBox;
@@ -50,8 +32,13 @@ public class PlayerController : MonoBehaviour
     // Xbox Controller Input
     [Header("Xbox Controller Input")]
     public float turnSensitivity = 100.0f;
+    public float smoothing = 2.0f;
     public XboxController xboxController;
+    private Vector2 smoothV = Vector2.zero;
 
+    private float _stunnedTimer = 0.0f;
+    private bool _isStunned = false;
+    private Vector3 _lastDirection = Vector3.zero;
     #region Private Variables
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
@@ -91,6 +78,17 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if(_isStunned)
+        {
+            disableMove = true;
+            _stunnedTimer += Time.deltaTime;
+            if(_stunnedTimer >= stunnedAfterKickTime)
+            {
+                _isStunned = false;
+                disableMove = false;
+            }
+        }
+
         if (disableMove)
             return;
 
@@ -116,10 +114,20 @@ public class PlayerController : MonoBehaviour
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
 
         // Set the target rotation to be equal to the direction of the mouse
+        if(_lastDirection.magnitude > 0.2F)
+            transform.forward = _lastDirection;
+
         if (xboxController == XboxController.First)
         {
+            var lookDelta = new Vector2(XCI.GetAxis(XboxAxis.RightStickX, XboxController.First), XCI.GetAxis(XboxAxis.RightStickY, XboxController.First));
+            lookDelta = Vector2.Scale(lookDelta, new Vector2(turnSensitivity * smoothing, turnSensitivity * smoothing));
+
+            // Getting the interpolated result between the two float values.
+            smoothV.x = Mathf.Lerp(smoothV.x, lookDelta.x, 1f / smoothing);
+            smoothV.y = Mathf.Lerp(smoothV.y, lookDelta.y, 1f / smoothing);
+
             // Calculating the transforms rotation based on the rotation axis:
-            transform.Rotate((transform.up * XCI.GetAxis(XboxAxis.RightStickX, XboxController.First)) * turnSensitivity * Time.deltaTime);
+            _lastDirection = new Vector3(smoothV.x, 0f, smoothV.y);
         }
         else
         {
@@ -128,61 +136,6 @@ public class PlayerController : MonoBehaviour
         }
 
         charRigidbody.velocity = moveVelocity;
-        #endregion
-
-        #region Old Stuff
-        //    if (inputDir != Vector2.zero)
-        //    {
-        //        ***THIS CODE LOCKS THE PLAYER ROTATION WHEN ATTACKING ANIMATION IS PLAYING***
-        //        if (!(meleeSwipe.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1) && !meleeSwipe.IsInTransition(0))
-
-
-        //            if (!movementDisabled && !disableMove)
-        //            {
-
-        //                // Move the character relevant to the set current speed
-        //                //controller.Move((transform.forward * currentSpeed) * Time.deltaTime);
-        //            }
-        //            else
-        //            {
-        //                Vector3 dir = new Vector3(inputDir.x, 0, inputDir.y);
-
-        //                if (!movementDisabled && !disableMove)
-        //                    charRigidbody.MovePosition((dir * currentSpeed) * Time.deltaTime);
-        //            }
-        //    }
-        //}
-
-        //if (!movementDisabled && !disableMove)
-        //    charRigidbody.MovePosition(velocity * Time.deltaTime);
-        #endregion
-
-        #region Knockback Update
-        //// Subtract the velocity by the slowDownAmount to slow down the knockback
-        //velocity -= velocity * slowDownAmount;
-
-        //// If the velocity gets below a certain threshold, set it to zero
-        //if (velocity.magnitude < 0.35f)
-        //    velocity = Vector3.zero;
-
-        //// Only use the timer if the counter has been activated
-        //if (knockBackCounter > 0)
-        //{
-        //    movementDisabled = true;
-        //    knockBackCounter -= Time.deltaTime;
-        //}
-        //// Once the Counter reaches 0, removes the force applied to the enemy
-        //else if (knockBackCounter <= 0)
-        //{
-        //    movementDisabled = false;
-        //}
-        #endregion
-
-        #region Health Update
-        //if (currentHealth > maxHealth)
-        //    currentHealth = maxHealth;
-        //else if (currentHealth <= 0)
-        //    currentHealth = 0;
         #endregion
 
         if (GetStartButtonPress() && deathMenu.activeSelf == false)
@@ -199,80 +152,6 @@ public class PlayerController : MonoBehaviour
         else
             return Input.GetKeyDown(KeyCode.Escape);
     }
-
-    #region Player Damage
-    // When the enemy hits the player, the player takes damage
-    //void OnCollisionEnter(Collision other)
-    //{
-    //    Debug.Log("Collision");
-    //    Vector3 playerHitDirection = other.transform.forward /*other.transform.position - transform.position*/;
-    //    playerHitDirection = playerHitDirection.normalized;
-
-    //    if (other.gameObject.tag == "EnemySword")
-    //    {
-    //        //TrooperBehaviour enemy = GameObject.FindGameObjectWithTag("Enemy").GetComponent<TrooperBehaviour>();
-    //        //TrooperBehaviour enemy = other.gameObject.GetComponentInParent<TrooperBehaviour>();
-    //        TrooperBehaviour enemy = other.gameObject.GetComponent<Weapon>().Owner;
-    //        if (enemy.xIsDownedX == false)
-    //        {
-    //            playerWasDamaged = true;
-    //            KnockBack(playerHitDirection);
-    //            currentHealth -= enemy.enemyAttackStrength;
-    //        }
-    //    }
-    //}
-
-
-    // Function to call when the player takes damage
-    //void PlayerTookDamage()
-    //{
-    //    // If the enemy took damage turn off the box collider
-    //    if (playerWasDamaged)
-    //    {
-    //        if (timer == 0)
-    //        {
-
-    //            Debug.Log("PLAYERHURT");
-    //            PlayerTookDamageAudio.Play();
-    //        }
-
-    //        PlayerInvulnerabilityOn();
-    //        timer += Time.deltaTime;
-    //    }
-
-    //    // And turn it back on after half a second (or change to be after the spin attack is finished)
-    //    if (timer >= invulnerabilityTime)
-    //    {
-    //        PlayerInvulnerabilityOff();
-    //        playerWasDamaged = false;
-    //    }
-    //}
-
-    //void PlayerInvulnerabilityOn()
-    //{
-    //    playerCollider.enabled = false;
-    //    Debug.Log("Collider.enabled = " + playerCollider.enabled);
-    //    ProtagMeshBodyTexture.GetComponent<SkinnedMeshRenderer>().material = invulnerable;
-    //}
-
-    //void PlayerInvulnerabilityOff()
-    //{
-    //    playerCollider.enabled = true;
-    //    timer = 0;
-    //    Debug.Log("Collider.enabled = " + playerCollider.enabled);
-    //    ProtagMeshBodyTexture.GetComponent<SkinnedMeshRenderer>().material = vulnerable;
-    //}
-
-    //public void KnockBack(Vector3 direction)
-    //{
-    //    knockBackCounter = knockBackTime;
-
-    //    playerMoveDirection = direction * knockBackForce;
-
-    //    // Apply velocity relative to the direction the player has been knocked back
-    //    velocity += playerMoveDirection;
-    //}
-    #endregion
 
     private void OnTriggerEnter(Collider other)
     {
@@ -303,6 +182,11 @@ public class PlayerController : MonoBehaviour
 
         // Returning true if any controllers found:
         return connectedControllers > 0;
+    }
+
+    public void SetStunned()
+    {
+        _isStunned = true;
     }
 
     public void KilledEnemy()
