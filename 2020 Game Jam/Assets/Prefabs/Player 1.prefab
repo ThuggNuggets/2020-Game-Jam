@@ -48,7 +48,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2058883765, guid: 40c598a86260dac43a5267a8bb820850, type: 3}
       propertyPath: turnSensitivity
-      value: 200
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2058883765, guid: 40c598a86260dac43a5267a8bb820850, type: 3}
+      propertyPath: smoothing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4277741360118709469, guid: 40c598a86260dac43a5267a8bb820850,
         type: 3}
