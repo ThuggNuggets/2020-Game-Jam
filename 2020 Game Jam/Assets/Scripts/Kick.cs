@@ -236,11 +236,6 @@ public class Kick : MonoBehaviour
         //}
     }
 
-    private float IsTriggerDown()
-    {
-        return XCI.GetAxis(XboxAxis.RightTrigger, XboxController.First); ;
-    }
-
     private bool GetInputButtonDown()
     {
         if (controller.xboxController == XboxController.First)

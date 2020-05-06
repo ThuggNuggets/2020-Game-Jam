@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
 
     private float _stunnedTimer = 0.0f;
     private bool _isStunned = false;
-    private Vector3 _lastDirection = Vector3.zero;
+    private Vector3 _lookDirection = Vector3.zero;
     #region Private Variables
     private Rigidbody charRigidbody;
     private CapsuleCollider playerCollider;
@@ -114,8 +114,9 @@ public class PlayerController : MonoBehaviour
         currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
 
         // Set the target rotation to be equal to the direction of the mouse
-        if(_lastDirection.magnitude > 0.2F)
-            transform.forward = _lastDirection;
+
+        if (_lookDirection.magnitude > 0.2F)
+            transform.forward = _lookDirection;
 
         if (xboxController == XboxController.First)
         {
@@ -127,7 +128,10 @@ public class PlayerController : MonoBehaviour
             smoothV.y = Mathf.Lerp(smoothV.y, lookDelta.y, 1f / smoothing);
 
             // Calculating the transforms rotation based on the rotation axis:
-            _lastDirection = new Vector3(smoothV.x, 0f, smoothV.y);
+            if(smoothV.magnitude > 0.1F)
+                _lookDirection = new Vector3(smoothV.x, 0f, smoothV.y);
+            else
+                _lookDirection = new Vector3(input.x, 0f, input.y);
         }
         else
         {
