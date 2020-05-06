@@ -7,12 +7,13 @@ public class EnemyManager : MonoBehaviour
     [Header("References")]
     public Transform spawnPointParent;
     public Transform enemyParent;
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
 
     [Header("Spawning Properties")]
     public float timeBetweenEnemySpawns = 5.0f;
     public float numberOfEnemies = 1.0f;
     public float addNumberOfEnemies = 0.2f;
+    public float firstWaveDelayTime = 5.0f;
     public bool enemiesSpawned = false;
 
     [Header("Enemy Properties")]
@@ -20,6 +21,7 @@ public class EnemyManager : MonoBehaviour
     public Transform playerTransform;
 
     // Privates
+    private bool firstWaveSpawned = false;
     private SpawnPoint[] _spawnPoints;
     private float _enemySpawnTimer = 0.0f;
 
@@ -37,6 +39,7 @@ public class EnemyManager : MonoBehaviour
             _spawnPoints[i] = spawnPointParent.GetChild(i).GetComponent<SpawnPoint>();
         }
 
+        firstWaveSpawned = false;
     }
 
     /// <summary>
@@ -44,27 +47,38 @@ public class EnemyManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        _enemySpawnTimer -= Time.deltaTime;
-        if (_enemySpawnTimer <= 0.0f)
+        // Delay before the first wave of enemies spawn
+        if (!firstWaveSpawned)
+            firstWaveDelayTime -= Time.deltaTime;
+        if (firstWaveDelayTime <= 0.0f)
         {
-            enemiesSpawned = false;
+            firstWaveSpawned = true;
         }
 
-        if (!enemiesSpawned)
+        if (firstWaveSpawned)
         {
             _enemySpawnTimer -= Time.deltaTime;
-            for (int i = 0; i < (int) numberOfEnemies; i++)
+            if (_enemySpawnTimer <= 0.0f)
             {
-                Transform rand = GetRandomSpawn();
-                if (rand != null)
-                    SpawnEnemy(rand);
-                else
-                    Debug.LogWarning("All spawn points occupied! Skipping enemy spawn.");
+                enemiesSpawned = false;
             }
 
-            _enemySpawnTimer = timeBetweenEnemySpawns;
-            numberOfEnemies += addNumberOfEnemies;
-            enemiesSpawned = true;
+            if (!enemiesSpawned)
+            {
+                _enemySpawnTimer -= Time.deltaTime;
+                for (int i = 0; i < (int)numberOfEnemies; i++)
+                {
+                    Transform rand = GetRandomSpawn();
+                    if (rand != null)
+                        SpawnEnemy(rand);
+                    else
+                        Debug.LogWarning("All spawn points occupied! Skipping enemy spawn.");
+                }
+
+                _enemySpawnTimer = timeBetweenEnemySpawns;
+                numberOfEnemies += addNumberOfEnemies;
+                enemiesSpawned = true;
+            }
         }
     }
 
@@ -76,7 +90,7 @@ public class EnemyManager : MonoBehaviour
         int rand = Random.Range(0, _spawnPoints.Length);
         if (!_spawnPoints[rand].Occupied)
             return _spawnPoints[rand].transform;
-        
+
         return null;
     }
 
@@ -86,8 +100,23 @@ public class EnemyManager : MonoBehaviour
     /// <param name="spawn"> Location of spawn. </param>
     private void SpawnEnemy(Transform spawn)
     {
-        GameObject enemy = Instantiate(enemyPrefab, spawn.position, spawn.rotation, enemyParent);
-        EnemyController controller = enemy.GetComponentInChildren<EnemyController>();
-        controller.SetupReferences(playerTransform, obstacles);
+        int index = enemyPrefabs.Length;
+        // Error check to make sure enemy prefabs exists to override index out of bounds
+        if (index == 0)
+        {
+            Debug.LogError("Index out of range, missing prefabs on the Enemy Manager.");
+        }
+        else
+        {
+            int rand = Random.Range(0, enemyPrefabs.Length);
+            Debug.Log("Spawned enemy prefab: " + rand);
+            for (int i = 0; i < enemyPrefabs.Length; i++)
+            {
+                GameObject enemy = Instantiate(enemyPrefabs[rand], spawn.position, spawn.rotation, enemyParent);
+                EnemyController controller = enemy.GetComponentInChildren<EnemyController>();
+                controller.SetupReferences(playerTransform, obstacles);
+            }
+        }
     }
 }
+

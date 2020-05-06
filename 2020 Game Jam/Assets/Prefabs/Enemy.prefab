@@ -169,7 +169,7 @@ MonoBehaviour:
   acceleration: 20
   attackDistance: 4
   stunnedAfterKickTime: 2
-  kickForce: 100
+  kickForce: 30
   kickCooldown: 0.7
   timeBeforeKick: 0.1
   obstacleLayer:

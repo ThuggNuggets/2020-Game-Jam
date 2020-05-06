@@ -165,18 +165,18 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   playerHit: {fileID: 8833998092784753465}
-  maxVelocity: 8
+  maxVelocity: 4
   acceleration: 20
-  attackDistance: 6
+  attackDistance: 3
   stunnedAfterKickTime: 2
-  kickForce: 100
+  kickForce: 80
   kickCooldown: 0.7
-  timeBeforeKick: 0.3
+  timeBeforeKick: 0.1
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 256
   avoidAngle: -120
-  avoidRecheckTime: 0.7
+  avoidRecheckTime: 2
   avoidRayDistance: 6
 --- !u!82 &8833998092784753465
 AudioSource:
