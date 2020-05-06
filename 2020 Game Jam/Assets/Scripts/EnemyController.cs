@@ -197,10 +197,7 @@ public class EnemyController : MonoBehaviour
     /// <summary>
     /// Updates while dead
     /// </summary>
-    private void Death()
-    {
-
-    }
+    private void Death() {}
 
     /// <summary>
     /// Gets the required direction to the player while compensating for obstacles.
@@ -209,7 +206,7 @@ public class EnemyController : MonoBehaviour
     public Vector3 GetDirection(Vector3 seekPos)
     {
         _direction = (seekPos - _transform.position).normalized;
-        Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.red);
+        //Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.red);
         if (_avoidDirection.magnitude <= 0)
         {
             RaycastHit hit;
@@ -217,7 +214,7 @@ public class EnemyController : MonoBehaviour
             {
                 if (hit.transform.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
                 {
-                    Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.green);
+                    //Debug.DrawRay(_transform.position, _transform.forward * avoidRayDistance, Color.green);
                     _rigidbody.velocity = Vector3.zero;
                     _avoidDirection = Quaternion.AngleAxis(avoidAngle, Vector3.up) * hit.normal;
                     StartCoroutine(CheckSequence());

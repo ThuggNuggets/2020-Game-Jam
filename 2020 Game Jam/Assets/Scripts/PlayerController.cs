@@ -32,9 +32,11 @@ public class PlayerController : MonoBehaviour
     // Xbox Controller Input
     [Header("Xbox Controller Input")]
     public float turnSensitivity = 100.0f;
-    public float smoothing = 2.0f;
+    public float turnSmoothing = 2.0f;
+    public float moveLookSmoothing = 3.0f;
     public XboxController xboxController;
     private Vector2 smoothV = Vector2.zero;
+    private Vector2 smoothLook = Vector2.zero;
 
     private float _stunnedTimer = 0.0f;
     private bool _isStunned = false;
@@ -121,17 +123,21 @@ public class PlayerController : MonoBehaviour
         if (xboxController == XboxController.First)
         {
             var lookDelta = new Vector2(XCI.GetAxis(XboxAxis.RightStickX, XboxController.First), XCI.GetAxis(XboxAxis.RightStickY, XboxController.First));
-            lookDelta = Vector2.Scale(lookDelta, new Vector2(turnSensitivity * smoothing, turnSensitivity * smoothing));
+            lookDelta = Vector2.Scale(lookDelta, new Vector2(turnSensitivity * turnSmoothing, turnSensitivity * turnSmoothing));
 
             // Getting the interpolated result between the two float values.
-            smoothV.x = Mathf.Lerp(smoothV.x, lookDelta.x, 1f / smoothing);
-            smoothV.y = Mathf.Lerp(smoothV.y, lookDelta.y, 1f / smoothing);
+            smoothV.x = Mathf.Lerp(smoothV.x, lookDelta.x, 1f / turnSmoothing);
+            smoothV.y = Mathf.Lerp(smoothV.y, lookDelta.y, 1f / turnSmoothing);
+
 
             // Calculating the transforms rotation based on the rotation axis:
             if(smoothV.magnitude > 0.1F)
                 _lookDirection = new Vector3(smoothV.x, 0f, smoothV.y);
             else
-                _lookDirection = new Vector3(input.x, 0f, input.y);
+            {
+                smoothLook = new Vector2(Mathf.Lerp(smoothLook.x, input.x, 1f / moveLookSmoothing), Mathf.Lerp(smoothLook.y, input.y, 1f / moveLookSmoothing));
+                _lookDirection = new Vector3(smoothLook.x, 0f, smoothLook.y);
+            }
         }
         else
         {
